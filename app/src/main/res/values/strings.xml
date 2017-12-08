@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">HotNews</string>
+    <string name="title_activity_launcher">LauncherActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_zhihu_fragment">Hello zhihu fragment</string>
+    <string name="hello_gank_fragment">Hello gank fragment</string>
+
+    <string name="more_info">加载更多...</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

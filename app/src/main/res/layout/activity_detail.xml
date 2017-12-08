@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="site.zhguixin.hotnews.ui.DetailActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <WebView
+            android:id="@+id/web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <ProgressBar
+            android:id="@+id/tip_progress"
+            style="?android:progressBarStyleHorizontal"
+            android:textColor="@color/colorAccent"
+            android:max="100"
+            android:layout_width="match_parent"
+            android:layout_height="3dp" />
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>
