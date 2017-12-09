@@ -8,6 +8,7 @@ import site.zhguixin.hotnews.http.ApiService;
 
 public class WxNewsPresenter implements MainContract.Presenter {
 
+    private int mCurrentPage = 1;
     private MainContract.View mView;
 
     @Override
@@ -22,6 +23,15 @@ public class WxNewsPresenter implements MainContract.Presenter {
 
     @Override
     public void getWxNewsInfo() {
-        ApiService.getWxListInfo(mView);
+        ApiService.getWxListInfo(mView,1);
+    }
+
+    @Override
+    public void loadMoreNews() {
+        if (mCurrentPage > 10) {
+            mView.showErrorMsg("没有更多内容了");
+            return;
+        }
+        ApiService.getWxListInfo(mView, ++mCurrentPage);
     }
 }

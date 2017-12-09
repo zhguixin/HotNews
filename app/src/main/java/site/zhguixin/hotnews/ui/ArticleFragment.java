@@ -7,12 +7,23 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import site.zhguixin.hotnews.R;
 import site.zhguixin.hotnews.presenter.ArticleContract;
 import site.zhguixin.hotnews.presenter.ArticlePresenter;
+import site.zhguixin.hotnews.utils.Constant;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +31,26 @@ import site.zhguixin.hotnews.presenter.ArticlePresenter;
 public class ArticleFragment extends Fragment implements ArticleContract.View {
 
     private ArticlePresenter mPresenter;
+    private Unbinder mUnbinder;
+
+    @BindView(R.id.background_view)
+    FrameLayout mBackgroundView;
+
+    @BindView(R.id.title_view)
+    TextView mTitleView;
+
+    @BindView(R.id.author_view)
+    TextView mAuthotView;
+
+    @BindView(R.id.content_view)
+    TextView mContentView;
+
+    private SimpleTarget<GlideDrawable> mBackgroundTarget = new SimpleTarget<GlideDrawable>() {
+        @Override
+        public void onResourceReady(GlideDrawable resource, GlideAnimation glideAnimation) {
+            mBackgroundView.setBackground(resource);
+        }
+    };
 
     public ArticleFragment() {
         // Required empty public constructor
@@ -28,6 +59,7 @@ public class ArticleFragment extends Fragment implements ArticleContract.View {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mPresenter = new ArticlePresenter();
     }
 
@@ -42,7 +74,13 @@ public class ArticleFragment extends Fragment implements ArticleContract.View {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mUnbinder = ButterKnife.bind(this, view);
         mPresenter.getArticle();
+
+        /*int random_bg = 1;
+        Glide.with(getActivity().getApplicationContext())
+                .load("https://meiriyiwen.com/images/new_feed/bg_"+random_bg+".jpg")
+                .into(mBackgroundTarget);*/
     }
 
     @Override
@@ -52,6 +90,9 @@ public class ArticleFragment extends Fragment implements ArticleContract.View {
 
     @Override
     public void showContent(Map<String, String> article) {
+        mTitleView.setText(article.get(Constant.TITLE));
+        mAuthotView.setText(article.get(Constant.AUTHOR));
+        mContentView.setText(article.get(Constant.CONTENT));
     }
 
     @Override
@@ -59,7 +100,7 @@ public class ArticleFragment extends Fragment implements ArticleContract.View {
         if (mPresenter != null) {
             mPresenter.detachView();
         }
-//        mUnbinder.unbind();
+        mUnbinder.unbind();
         super.onDestroyView();
     }
 }

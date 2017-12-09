@@ -46,6 +46,7 @@ public class WxAdapter extends RecyclerView.Adapter<WxAdapter.ViewHolder> {
         holder.dateView.setText(mList.get(position).getCtime());
         Glide.with(mContext)
                 .load(mList.get(position).getPicUrl())
+                .placeholder(R.mipmap.ic_launcher)
                 .centerCrop()
                 .crossFade()
                 .into(holder.picView);

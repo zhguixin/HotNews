@@ -12,9 +12,11 @@ public interface MainContract {
 
     interface View extends BaseView {
         void showContent(List<WXNewsBean> infoList);
+        void showMoreContent(List<WXNewsBean> infoList);
     }
 
     interface Presenter extends BasePresenter<View> {
         void getWxNewsInfo();
+        void loadMoreNews();
     }
 }

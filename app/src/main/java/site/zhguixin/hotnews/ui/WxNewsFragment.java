@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +120,7 @@ public class WxNewsFragment extends Fragment implements MainContract.View {
                 if (!mIsLoading && (totalItem - visibleItem) <= firstVisible && visibleItem > 1) {
                     mIsLoading = true;
                     Log.d(TAG, "onScrolled: load more");
-//                    mPresenter.loadMoreNews();
+                    mPresenter.loadMoreNews();
                 }
 //                Log.d(TAG, "onScrolled: totalItem=" + totalItem + " firstVisible=" + firstVisible +
 //                    " visibleItem=" + visibleItem);
@@ -147,6 +148,8 @@ public class WxNewsFragment extends Fragment implements MainContract.View {
     @Override
     public void showErrorMsg(String msg) {
         Log.d(TAG, "showErrorMsg: " + msg);
+        mAdapter.setVisible(false);
+        Toast.makeText(getActivity(), msg,Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -158,5 +161,12 @@ public class WxNewsFragment extends Fragment implements MainContract.View {
         mList.clear();
         mList.addAll(infoList);
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showMoreContent(List<WXNewsBean> infoList) {
+        mList.addAll(infoList);
+        mAdapter.notifyDataSetChanged();
+        mIsLoading = false;
     }
 }

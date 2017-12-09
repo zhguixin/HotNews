@@ -11,4 +11,8 @@ public class Constant {
     public static final String GANK_HOST = "http://gank.io/api/";
     public static final String ZHIHU_HOST = "http://news-at.zhihu.com/api/4/";
     public static final String MEIWEN_HOST = "https://meiriyiwen.com/";
+
+    public static final String TITLE = "title";
+    public static final String AUTHOR = "author";
+    public static final String CONTENT = "content";
 }

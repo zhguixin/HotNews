@@ -24,6 +24,7 @@ import site.zhguixin.hotnews.entity.WXNewsBean;
 import site.zhguixin.hotnews.entity.WXResult;
 import site.zhguixin.hotnews.presenter.Callback;
 import site.zhguixin.hotnews.presenter.MainContract;
+import site.zhguixin.hotnews.utils.AppExecutors;
 import site.zhguixin.hotnews.utils.Constant;
 
 /**
@@ -33,10 +34,13 @@ import site.zhguixin.hotnews.utils.Constant;
 public class ApiService {
     private static final String TAG = ApiService.class.toString();
 
-    public static void getWxListInfo(final MainContract.View view) {
+    private static AppExecutors mAppExecutors = new AppExecutors();
+
+    public static void getWxListInfo(final MainContract.View view, int page) {
+        final int mPage = page;
         BuildService.getInstance()
                 .buildService(Constant.WX_HOST)
-                .getWXHot(Constant.API_KEY,10,1)
+                .getWXHot(Constant.API_KEY,10,page)
                 .flatMap(new Function<WXResult<List<WXNewsBean>>, Flowable<List<WXNewsBean>>>() {
                     @Override
                     public Flowable<List<WXNewsBean>> apply(WXResult<List<WXNewsBean>> listWXResult) throws Exception {
@@ -55,8 +59,12 @@ public class ApiService {
                     @Override
                     public void onNext(List<WXNewsBean> wxNewsBeans) {
                         Log.d(TAG, "onNext: thread=" + Thread.currentThread().getName());
-                        Log.d(TAG, "onNext: wxNewsBean size=" + wxNewsBeans.size());
-                        view.showContent(wxNewsBeans);
+                        Log.d(TAG, "onNext: wxNewsBean size=" + wxNewsBeans.size() + " mPage=" + mPage);
+                        if(mPage > 1) {
+                            view.showMoreContent(wxNewsBeans);
+                        } else {
+                            view.showContent(wxNewsBeans);
+                        }
                     }
 
                     @Override
@@ -96,7 +104,12 @@ public class ApiService {
         call.enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                myCallback.onFail("网络访问失败，请检查网络重试");
+                mAppExecutors.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        myCallback.onFail("网络访问失败，请检查网络重试");
+                    }
+                });
             }
 
             @Override
@@ -106,14 +119,20 @@ public class ApiService {
                 StringBuilder tempResult = new StringBuilder();
                 try {
                     inputStream = response.body().byteStream();
-                    InputStreamReader instreamReader = new InputStreamReader(inputStream, "gb2312");
+                    InputStreamReader instreamReader = new InputStreamReader(inputStream, "utf-8");
                     BufferedReader buffStr = new BufferedReader(instreamReader);
                     String temp = "";
                     while ((temp = buffStr.readLine()) != null) {
                         tempResult.append(temp + "\n");
                     }
                     inputStream.close();
-                    myCallback.onSuccess(tempResult.toString());
+                    final String result = tempResult.toString();
+                    mAppExecutors.mainThread().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            myCallback.onSuccess(result);
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
