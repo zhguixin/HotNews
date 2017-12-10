@@ -51,11 +51,13 @@ public class WxAdapter extends RecyclerView.Adapter<WxAdapter.ViewHolder> {
                 .crossFade()
                 .into(holder.picView);
         final String url = mList.get(position).getUrl();
+        final String title = mList.get(position).getTitle();
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DetailActivity.launch(new DetailActivity.Builder()
                         .setContext(mContext)
+                        .setTitle(title)
                         .setUrl(url));
             }
         });

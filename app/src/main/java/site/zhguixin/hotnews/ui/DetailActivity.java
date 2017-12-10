@@ -2,28 +2,28 @@ package site.zhguixin.hotnews.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import site.zhguixin.hotnews.R;
-import site.zhguixin.hotnews.utils.Utils;
+import site.zhguixin.hotnews.utils.Constant;
 
 public class DetailActivity extends AppCompatActivity {
 
     private static final String TAG = DetailActivity.class.toString();
     private String mUrl;
+    private String mTitle;
     private Context mContext;
 
     @BindView(R.id.web_view)
@@ -39,8 +39,17 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mContext = this;
 
+        ActionBar actionBar = getSupportActionBar();
+
+
         Intent intent = getIntent();
-        mUrl = intent.getExtras().getString("URL");
+        mUrl = intent.getExtras().getString(Constant.URL);
+        mTitle = intent.getExtras().getString(Constant.TITLE);
+        if (actionBar != null) {
+            actionBar.setTitle(mTitle);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         init();
     }
@@ -75,10 +84,30 @@ public class DetailActivity extends AppCompatActivity {
         mWebView.loadUrl(mUrl);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static void launch(Builder builder) {
+        Intent intent = new Intent();
+        intent.setClass(builder.mContext, DetailActivity.class);
+        intent.putExtra(Constant.URL, builder.mUrl);
+        intent.putExtra(Constant.TITLE, builder.mTitle);
+        builder.mContext.startActivity(intent);
+    }
+
     public static class Builder {
         private Context mContext;
         private String mTitle;
         private String mDescription;
+
         private String mUrl;
 
         public Builder() {
@@ -98,17 +127,9 @@ public class DetailActivity extends AppCompatActivity {
             mDescription = description;
             return this;
         }
-
         public Builder setUrl(String url) {
             mUrl = url;
             return this;
         }
-    }
-
-    public static void launch(Builder builder) {
-        Intent intent = new Intent();
-        intent.setClass(builder.mContext, DetailActivity.class);
-        intent.putExtra("URL", builder.mUrl);
-        builder.mContext.startActivity(intent);
     }
 }

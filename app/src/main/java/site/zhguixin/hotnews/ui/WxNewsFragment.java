@@ -31,7 +31,7 @@ import site.zhguixin.hotnews.presenter.WxNewsPresenter;
  * Use the {@link WxNewsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class WxNewsFragment extends Fragment implements MainContract.View {
+public class WxNewsFragment extends LazyFragment implements MainContract.View {
     private static final String TAG = WxNewsFragment.class.toString();
 
     // TODO: Rename parameter arguments, choose names that match
@@ -97,7 +97,22 @@ public class WxNewsFragment extends Fragment implements MainContract.View {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this,view);
+        mView.getRootView().findViewById(R.id.fab).setVisibility(View.INVISIBLE);
         init();
+    }
+
+    @Override
+    public void onFragmentFirstVisible() {
+
+    }
+
+    // fixme 第一次启动调用不到
+    @Override
+    public void onFragmentVisible(boolean isVisible) {
+        Log.d(TAG, "onFragmentVisible: isVisible=" + isVisible);
+        if (isVisible) {
+            mView.getRootView().findViewById(R.id.fab).setVisibility(View.INVISIBLE);
+        }
     }
 
     private void init() {

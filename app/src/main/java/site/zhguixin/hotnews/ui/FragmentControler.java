@@ -56,13 +56,19 @@ public class FragmentControler {
         Fragment fragment = mListFragments.get(position);
         FragmentTransaction transaction = mManager.beginTransaction();
         transaction.show(fragment);
+        fragment.setUserVisibleHint(true);
         transaction.commit();
+    }
+
+    public Fragment getFragment(int position) {
+        return mListFragments.get(position);
     }
 
     private void hideFragments() {
         FragmentTransaction transaction = mManager.beginTransaction();
         for (Fragment fragment : mListFragments) {
             transaction.hide(fragment);
+            fragment.setUserVisibleHint(false);
         }
         transaction.commit();
     }

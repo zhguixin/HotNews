@@ -3,12 +3,16 @@ package site.zhguixin.hotnews.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -28,10 +32,12 @@ import site.zhguixin.hotnews.utils.Constant;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ArticleFragment extends Fragment implements ArticleContract.View {
+public class ArticleFragment extends LazyFragment implements ArticleContract.View {
+    private static final String TAG = "ArticleFragment";
 
     private ArticlePresenter mPresenter;
     private Unbinder mUnbinder;
+    private FloatingActionButton mFloatingBtn;
 
     @BindView(R.id.background_view)
     FrameLayout mBackgroundView;
@@ -75,7 +81,21 @@ public class ArticleFragment extends Fragment implements ArticleContract.View {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
-        mPresenter.getArticle();
+
+        mFloatingBtn = view.getRootView().findViewById(R.id.fab);
+        mFloatingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "再换一篇文章？", Snackbar.LENGTH_LONG)
+                        .setAction("确认", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(getActivity(),"hold on..",Toast.LENGTH_SHORT).show();
+//                                mPresenter.changeArticle();
+                            }
+                        }).show();
+            }
+        });
 
         /*int random_bg = 1;
         Glide.with(getActivity().getApplicationContext())
@@ -102,5 +122,18 @@ public class ArticleFragment extends Fragment implements ArticleContract.View {
         }
         mUnbinder.unbind();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onFragmentFirstVisible() {
+        mPresenter.getArticle();
+    }
+
+    @Override
+    public void onFragmentVisible(boolean isVisible) {
+        Log.d(TAG, "onFragmentVisible: isVisible=" + isVisible);
+        if (isVisible) {
+            mFloatingBtn.setVisibility(View.VISIBLE);
+        }
     }
 }
