@@ -95,10 +95,10 @@ public class ApiService {
         }, BackpressureStrategy.BUFFER);
     }
 
-    public static void getArticle(final Callback<String> myCallback) {
+    public static void getArticle(String url, final Callback<String> myCallback) {
         Request request = new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Safari/604.1.38")
-                .url(Constant.MEIWEN_HOST)
+                .url(Constant.MEIWEN_HOST + url)
                 .build();
         Call call = BuildService.getInstance().getHttpClient().newCall(request);
         call.enqueue(new okhttp3.Callback() {

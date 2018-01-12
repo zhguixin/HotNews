@@ -40,8 +40,8 @@ public class ArticlePresenter implements ArticleContract.Presenter {
     }
 
     @Override
-    public void getArticle() {
-        ApiService.getArticle(new Callback<String>() {
+    public void getArticle(String url) {
+        ApiService.getArticle(url, new Callback<String>() {
             @Override
             public void onSuccess(String info) {
                 Document document = Jsoup.parse(info);

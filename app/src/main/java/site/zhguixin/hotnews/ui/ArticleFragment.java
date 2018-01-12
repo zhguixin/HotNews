@@ -1,11 +1,15 @@
 package site.zhguixin.hotnews.ui;
 
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,9 +42,13 @@ public class ArticleFragment extends LazyFragment implements ArticleContract.Vie
     private ArticlePresenter mPresenter;
     private Unbinder mUnbinder;
     private FloatingActionButton mFloatingBtn;
+    private AnimatorSet mAnimatorSet;
 
     @BindView(R.id.background_view)
     FrameLayout mBackgroundView;
+
+    @BindView(R.id.scroll_view)
+    NestedScrollView mScrollView;
 
     @BindView(R.id.title_view)
     TextView mTitleView;
@@ -81,6 +89,7 @@ public class ArticleFragment extends LazyFragment implements ArticleContract.Vie
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
+        mAnimatorSet = new AnimatorSet();
 
         mFloatingBtn = view.getRootView().findViewById(R.id.fab);
         mFloatingBtn.setOnClickListener(new View.OnClickListener() {
@@ -90,13 +99,25 @@ public class ArticleFragment extends LazyFragment implements ArticleContract.Vie
                         .setAction("确认", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Toast.makeText(getActivity(),"hold on..",Toast.LENGTH_SHORT).show();
-//                                mPresenter.changeArticle();
+                                Toast.makeText(getActivity(),"hold on...",Toast.LENGTH_SHORT).show();
+                                mPresenter.getArticle("random/");
                             }
                         }).show();
             }
         });
 
+        mScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY + 15) {
+//                    Log.d(TAG, "onScrollChange: Down");
+                    fabHide();
+                } else if (scrollY + 15 < oldScrollY){
+//                    Log.d(TAG, "onScrollChange: Up");
+                    fabShow();
+                }
+            }
+        });
         /*int random_bg = 1;
         Glide.with(getActivity().getApplicationContext())
                 .load("https://meiriyiwen.com/images/new_feed/bg_"+random_bg+".jpg")
@@ -126,7 +147,7 @@ public class ArticleFragment extends LazyFragment implements ArticleContract.Vie
 
     @Override
     public void onFragmentFirstVisible() {
-        mPresenter.getArticle();
+        mPresenter.getArticle("");
     }
 
     @Override
@@ -135,5 +156,31 @@ public class ArticleFragment extends LazyFragment implements ArticleContract.Vie
         if (isVisible) {
             mFloatingBtn.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void fabShow() {
+        if (mFloatingBtn.getAlpha() == 1f|| mAnimatorSet.isRunning()) {
+            return;
+        }
+
+        ValueAnimator animatorX = ObjectAnimator.ofFloat(mFloatingBtn,"scaleX",0f,1f);
+        ValueAnimator animatorY = ObjectAnimator.ofFloat(mFloatingBtn,"scaleY",0f,1f);
+        ValueAnimator animatorAlpha = ObjectAnimator.ofFloat(mFloatingBtn, "alpha", 0f,1f);
+        mAnimatorSet.setDuration(500);
+        mAnimatorSet.playTogether(animatorX,animatorY,animatorAlpha);
+        mAnimatorSet.start();
+    }
+
+    private void fabHide() {
+        if (mFloatingBtn.getAlpha() == 0f || mAnimatorSet.isRunning()) {
+            return;
+        }
+
+        ValueAnimator animatorX = ObjectAnimator.ofFloat(mFloatingBtn,"scaleX",1f,0f);
+        ValueAnimator animatorY = ObjectAnimator.ofFloat(mFloatingBtn,"scaleY",1f,0f);
+        ValueAnimator animatorAlpha = ObjectAnimator.ofFloat(mFloatingBtn, "alpha", 1f,0f);
+        mAnimatorSet.setDuration(500);
+        mAnimatorSet.playTogether(animatorX,animatorY,animatorAlpha);
+        mAnimatorSet.start();
     }
 }

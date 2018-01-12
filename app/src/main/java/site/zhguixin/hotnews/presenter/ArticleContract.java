@@ -12,6 +12,6 @@ public interface ArticleContract {
     }
 
     interface Presenter extends BasePresenter<View> {
-        void getArticle();
+        void getArticle(String url);
     }
 }
